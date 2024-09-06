@@ -1,8 +1,5 @@
-
-
 import discord
-import requests
-import json
+import ollama
 
 TOKEN = ""
 url = "http://localhost:11434/api/generate"
@@ -25,22 +22,8 @@ async def on_message(message):
         return
 
     if client.user.mentioned_in(message):
-        data = {
-            "model": model,
-            "prompt": message.content,
-        }
-        response = requests.post(url, json=data)
-        response_text = response.text
+        finalMessage = ollama.generate(model=model, prompt='Why is the sky blue?')
 
-        response_lines = response_text.splitlines()
-        response_json = [json.loads(line) for line in response_lines]
-
-        finalMessage = ""
-        for line in response_json:
-            print(line["response"], end="")
-            finalMessage = finalMessage + line["response"]
-
-
-        await message.channel.send(finalMessage)
+        await message.channel.send(finalMessage["response"])
 
 client.run(TOKEN)
